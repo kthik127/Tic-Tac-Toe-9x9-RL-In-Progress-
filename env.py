@@ -43,13 +43,53 @@ class UltimateTTTEnv:
             return [to_global_idx(self.active_macro,cell) for cell in range(len(macro_squares)) if macro_squares[cell] == 0] # only for those macrosquares that have open spots
 
     def step(self, action):
-        """"""
-        pass
+        """processing a move and checking win condition after each move"""
+        reward = 0
+        done = False
+        cell = action.item()
+
+        if cell not in self.legal_moves(): # first make sure the move is legal
+            raise Exception("not a legal move.") # do not reward non-legal moves
+
+        macro_square = to_local_coords(cell)[1] # individual cell MAPS to macro square number
+        self.board[cell] = self.current_player  # mark the cell
+        self.active_macro = macro_square  # set the active square to the current square
+
+        # check if won
+
+        result = self.check_macro_win(macro_square)
+
+        self.macro_status[macro_square] = result
+
+        # check win logic
+
+        win_count = 0
+        draw_count = 0
+        
+        if 0 not in self.macro_status: # all macro squares are decided 
+            done = True # game is done 
+            for square in self.macro_status:
+                if square == self.current_player: # count the number of squares player won 
+                    win_count += 1
+                elif square == 2:
+                    draw_count += 1 # count number of squares drawn 
+            opp_count = 9-draw_count-win_count # check winners 
+            if win_count < opp_count:
+                reward = -1 # negative reward for loss 
+            elif win_count > opp_count:
+                reward = 1 # positive reward for win 
+
+        self.current_player = -self.current_player # switch players  
+
+        return (self.encode_state(), reward, done, {}) # (next_state, reward, finished_condition, info) 
 
 
 
 
     def encode_state(self):
         pass
+
+
+
 
 
