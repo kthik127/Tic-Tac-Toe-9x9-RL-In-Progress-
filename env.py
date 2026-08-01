@@ -51,43 +51,51 @@ class UltimateTTTEnv:
         if cell not in self.legal_moves(): # first make sure the move is legal
             raise Exception("not a legal move.") # do not reward non-legal moves
 
-        macro_square = to_local_coords(cell)[1] # individual cell MAPS to macro square number
+        macro_square, next_square = to_local_coords(cell) # individual cell MAPS to CURRENT macro square number AND mini cell number, which is the next square
         self.board[cell] = self.current_player  # mark the cell
-        self.active_macro = macro_square  # set the active square to the current square
 
-        # check if won
+        # check if a current square is won
 
         result = self.check_macro_win(macro_square)
-
         self.macro_status[macro_square] = result
+
+        # set the NEXT macro square as the new active square that the player must route too
+
+        if self.macro_status[next_square] != 0: # already won or decided
+            self.active_macro = None # free choice
+        else:
+            self.active_macro = next_square  # set the active square to the NEXT square
 
         # check win logic
 
         win_count = 0
         draw_count = 0
-        
-        if 0 not in self.macro_status: # all macro squares are decided 
-            done = True # game is done 
+
+        if 0 not in self.macro_status or len(self.legal_moves()) == 0: # all macro squares are decided
+            done = True # game is done
             for square in self.macro_status:
-                if square == self.current_player: # count the number of squares player won 
+                if square == self.current_player: # count the number of squares player won
                     win_count += 1
                 elif square == 2:
-                    draw_count += 1 # count number of squares drawn 
-            opp_count = 9-draw_count-win_count # check winners 
+                    draw_count += 1 # count number of squares drawn
+            opp_count = 9-draw_count-win_count # check winners
             if win_count < opp_count:
-                reward = -1 # negative reward for loss 
+                reward = -1 # negative reward for loss
             elif win_count > opp_count:
-                reward = 1 # positive reward for win 
+                reward = 1 # positive reward for win
 
-        self.current_player = -self.current_player # switch players  
+        self.current_player = -self.current_player # switch players
 
-        return (self.encode_state(), reward, done, {}) # (next_state, reward, finished_condition, info) 
+        return (self.encode_state(), reward, done, {}) # (next_state, reward, finished_condition, info)
 
 
 
 
     def encode_state(self):
         pass
+
+
+
 
 
 
