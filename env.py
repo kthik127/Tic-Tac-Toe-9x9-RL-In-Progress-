@@ -23,8 +23,7 @@ class UltimateTTTEnv:
 
     def check_macro_win(self, macro_idx):
         """checks if a macro_square has a winning combination of moves by a player or is in a draw, returns status"""
-        start = macro_idx * 9
-        macro_squares = self.board[start:start+9] # looking at 9 mini cells within a single macroboard
+        macro_squares = [self.board[to_global_idx(macro_idx, i)] for i in range(9)]
 
         for [c1,c2,c3] in self.win_lines:
             if macro_squares[c1] == macro_squares[c2] == macro_squares[c3] != 0: # if all are filled and NONzero (must be EQUAL though)
@@ -39,7 +38,7 @@ class UltimateTTTEnv:
         if self.active_macro is None or self.macro_status[self.active_macro] != 0: # free choice OR macro square is already won
             return [cell for cell in range(len(self.board)) if self.board[cell] == 0 and self.macro_status[to_local_coords(cell)[0]] == 0] # any move in board thats not taken
         else:
-            macro_squares = self.board[self.active_macro*9:self.active_macro*9+9] # only look within the specific macrosquare
+            macro_squares = [self.board[to_global_idx(self.active_macro, i)] for i in range(9)] # only look within the specific macrosquare
             return [to_global_idx(self.active_macro,cell) for cell in range(len(macro_squares)) if macro_squares[cell] == 0] # only for those macrosquares that have open spots
 
     def step(self, action):
@@ -92,8 +91,40 @@ class UltimateTTTEnv:
 
 
     def encode_state(self):
-        pass
+        """
+        returning a state with 4 channels
+        Channel 0: player's moves (1 marked, 0 unmarked)
+        Channel 1: opponent's moves (1 marked, 0 unmarked)
+        Channel 2: whether cells are in a current active square (1 yes, 0 no)
+        Channel 3: whether cells are in a decided macro square (1 yes, 0 no)
+        """
+        board_state = torch.zeros(4,9,9,dtype=torch.float32) # initialize board state as a tensor with 4 channels
 
+        legal = self.legal_moves()
+
+        for row in range(9):
+            for col in range(9):
+
+                # initializing the player + opponent moves
+
+                if self.board[row*9 + col] == self.current_player:
+                    board_state[0,row,col] = 1
+                elif self.board[row*9 + col] == -self.current_player:
+                    board_state[1,row,col] = 1
+
+                # checking if its in an active macro_square
+
+                square = to_local_coords(row*9 + col)[0]
+
+                if row * 9 + col in legal:
+                    board_state[2,row,col] = 1
+
+                # checking if its decided
+
+                if self.macro_status[square] != 0:
+                    board_state[3,row,col] = 1
+
+        return board_state
 
 
 
