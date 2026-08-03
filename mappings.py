@@ -7,13 +7,19 @@ def cell_to_next_square(cell_number):
 
 def to_global_idx(macro_square,idx):
     """convert from 2D coordinates to 1x81 one-D vector"""
-    return macro_square * 9 + idx # individual big square * 9, add the extra cell
+    # same conversions to convert from row/col to macro-square/index
+    row = (macro_square // 3)*3 + idx // 3
+    col = (macro_square % 3)*3 + idx % 3
+    return row * 9 + col
 
 def to_local_coords(global_idx):
     """convert from element of 1D vector to 2D coordinate in 9x9 grid"""
-    macro_square = global_idx // 9 # for BIG square (macro square)
-    cell_number = global_idx % 9 # for the individual cell index WITHIN the square
+    row = global_idx // 9 # row
+    col = global_idx % 9 # column
+    macro_square = (row // 3)*3 + col // 3 # big square
+    cell_number = (row % 3)*3 + col % 3 # individual cells
     return (macro_square, cell_number) # return as a tuple coordinate pair
+
 
 
 
