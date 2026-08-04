@@ -1,5 +1,6 @@
 # building the actual basic neural network model, just a q-function
 # using Conv2d to preserve board geometry, it's a Convolutional Neural Network (CNN)
+# we cannot use a Q-table due to size constraints
 
 import torch.nn as nn
 
@@ -18,7 +19,7 @@ class DQN(nn.Module): # nasic convolutional neural network (CNN) function that h
         super().__init__()
         # 3 convolutional layers for the 9x9 board total using sliding windows for learning / training
         self.conv1 = nn.Conv2d(4,64,kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(64,128,kernel_size=3,padding=1)
+        self.conv2 = nn.Conv2d(64,128,kernel_size=3,padding=1) # taking previous output channels as new input channels for next layer 
         self.conv3 = nn.Conv2d(128,128,kernel_size=3,padding=1)
 
         # ReLU layer
@@ -47,7 +48,6 @@ class DQN(nn.Module): # nasic convolutional neural network (CNN) function that h
         x = self.relu(self.fc1(x)) # shifting layers from spatial to flat
         x = self.fc2(x)
         return x # returning the final output
-
 
 
 
