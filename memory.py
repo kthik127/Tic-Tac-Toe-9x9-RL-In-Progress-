@@ -1,5 +1,10 @@
 # replay buffer memory (for memory of board states from previous games for non-randomized learning) DURING TRAINING ONLY
 
+"""
+replay buffer alone is not interacting with any neural network,
+its just a framework (like a set of rules) that we feed to the neural network function, giving it board_state
+"""
+
 import random
 from collections import deque
 
@@ -15,7 +20,7 @@ class ReplayBuffer:
         """
         adds a moveplay to the transitions
         moveplay ==> 5D tensor (board_state, action, reward, next_board_state, done)
-        board state also represented as (4,9,9) tensor 
+        board state also represented as (4,9,9) tensor
         """
         self.transitions.append((state,action,reward,next_state,done)) # adding a moveplay to our transitions list
 
@@ -24,5 +29,5 @@ class ReplayBuffer:
         return random.sample(self.transitions, batch_size) # returning a random collection of moveplays
 
     def __len__(self):
-        "returns the length of the number of moveplays stored"
+        """returns the length of the number of moveplays stored"""
         return len(self.transitions)
