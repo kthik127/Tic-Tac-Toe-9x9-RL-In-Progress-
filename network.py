@@ -1,15 +1,19 @@
 # building the actual basic neural network model, just a q-function
-# using Conv2d to preserve board geometry, it's a Convolutional Neural Network (CNN) 
+# using Conv2d to preserve board geometry, it's a Convolutional Neural Network (CNN)
 
 import torch.nn as nn
 
 class DQN(nn.Module): # nasic convolutional neural network (CNN) function that has layers
     def __init__(self):
         """
+        for convolutional layers ==> 
         in_channels: number of input channels (initially 4 from the board state per cell)
         out_channels: number of output channels
         kernel_size: 3 for a 3x3 sliding window for the board geometrically
         padding: controlling the spatial output size
+        
+        fully connected layers ==>
+        input and output features (dimensions) 
         """
         super().__init__()
         # 3 convolutional layers for the 9x9 board total using sliding windows for learning / training
@@ -30,13 +34,20 @@ class DQN(nn.Module): # nasic convolutional neural network (CNN) function that h
     def forward(self, x):
         """pass"""
         # x is an input tensor, passing it through layers of our CNN function below
+        # convolutional layers (with sliding windows)
         x = self.relu(self.conv1(x)) # relu btwn conv layer 1 and layer 2
         x = self.relu(self.conv2(x)) # relu btwn conv layer 2 and layer 3
         x = self.relu(self.conv3(x)) # relu again (for nonlinear properties)
-        x = x.flatten(start_dim=1) # flattening
+        x = x.flatten(start_dim=1) # flattening the multi-dimensional tensor that passed through convulitional layers for sliding windows
+
+        # fully connected layers mapping inputs to outputs
         x = self.relu(self.fc1(x)) # shifting layers from spatial to flat
         x = self.fc2(x)
         return x # returning the final output
+
+
+
+
 
 
 
