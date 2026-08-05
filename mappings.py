@@ -3,7 +3,7 @@ CELL_TO_SQUARE = {SQUARE_TO_IDX[key] : key for key in SQUARE_TO_IDX}
 
 def cell_to_next_square(cell_number):
     """helper function for routing, mapping cell to active square """
-    return cell_number
+    return CELL_TO_SQUARE[cell_number]
 
 def to_global_idx(macro_square,idx):
     """convert from 2D coordinates to 1x81 one-D vector"""
