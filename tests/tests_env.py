@@ -27,6 +27,8 @@ def test_col_win():
 try: 
   test_row_win() 
   print("Passed test 1")
+  test_col_win()
+  print("Passed test 2") 
 except: 
   print("ERROR") 
   
