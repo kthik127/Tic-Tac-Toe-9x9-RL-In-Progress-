@@ -1,4 +1,4 @@
-# Tic-Tac-Toe-9x9-RL (Work In Progress) 
+# Tic-Tac-Toe-9x9-RL (In Progress) 
 
 An implementation of a Deep Q-Learning (DQN) agent applied to Ultimate 9x9 Tic Tac Toe, using PyTorch. 
 
